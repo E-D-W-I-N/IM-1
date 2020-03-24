@@ -1,11 +1,9 @@
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Random;
 
 public class Main {
 
     /* Количество повторений */
-    private static final int n = 2;
+    private static final int n = 1000000;
     /* Вероятность брака */
     private static final double P = 0.1;
     /* Первый лимит брака */
@@ -17,24 +15,22 @@ public class Main {
     /* Проверяем каждую третью деталь */
     private static int checkEvery = 3;
 
-
     public static void main(String[] args) {
-        System.out.println(start());
+        double time = start();
+        System.out.printf("Среднее время наработки станка до остановки - %.0f Минут, %.0f Секунд", Math.floor(time), time % 1 * 100);
     }
 
     private static double start() {
         Random r = new Random();
         /* Общее время работы станка */
         double time = 0.0;
-        for (int i = n; i > 0; i--) {
+        for (int i = 0; i < n; i++) {
             /* Счетчик обработанных деталей */
             int partsCounter = 0;
             /* Счетчик бракованных деталей */
             int defectCounter = 0;
-            while (true) {
-                for (int poisson = getPoissonRandom(); poisson > 0; poisson--) {
-                    /* Генерируем Xj для определения того, бракованная деталь или нет */
-                    double chance = BigDecimal.valueOf(r.nextDouble()).setScale(1, RoundingMode.DOWN).doubleValue();
+            do {
+                for (int poisson = 0; poisson < getPoissonRandom(); poisson++) {
                     /* Увеличиваем значение счетчика обработанных деталей */
                     partsCounter++;
                     /* Если количество брака достигло первого лимита, то начинаем проверять каждую деталь */
@@ -43,23 +39,23 @@ public class Main {
                     }
                     /* Проверяем деталь на брак */
                     if (partsCounter % checkEvery == 0) {
+                        /* Генерируем Xj для определения того, бракованная деталь или нет */
+                        double chance = Math.floor(r.nextDouble() * 10) / 10;
                         if (chance == P) {
                             /* Если деталь бракованна, то увеличиваем счетчик брака */
                             defectCounter++;
                         }
                     }
+                    /* Если количество брака достигло обоих лимитов, то приостанавливаем работу станка */
+                    if (defectCounter == firstDefectLimit + secondDefectLimit) {
+                        /* Считаем затраченное время (количество обработанных деталей / интенсивность их поступления) */
+                        time += partsCounter / 2.0;
+                        break;
+                    }
                 }
-                /* Если количество брака достигло обоих лимитов, то приостанавливаем работу станка */
-                if (defectCounter == firstDefectLimit + secondDefectLimit) {
-                    System.out.println(partsCounter);
-                    /* Считаем затраченное время (количество обработанных деталей / интенсивность их поступления) */
-                    time += partsCounter / 2.0;
-                    System.out.println(time);
-                    break;
-                }
-            }
+            } while (defectCounter != firstDefectLimit + secondDefectLimit);
         }
-        /* Возвращаем среднее время работы станка до его отключения */
+        /* Возвращаем среднее время наработки станка до остановки */
         return time / n;
     }
 
