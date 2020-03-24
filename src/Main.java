@@ -33,6 +33,7 @@ public class Main {
             /* Счетчик бракованных деталей */
             int defectCounter = 0;
             do {
+                /* Цикл от 0 до количества деталей в потоке поступления подчиненому закону Пуассона */
                 for (int poisson = 0; poisson < getPoissonRandom(); poisson++) {
                     /* Увеличиваем значение счетчика обработанных деталей */
                     partsCounter++;
