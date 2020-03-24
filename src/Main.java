@@ -1,9 +1,8 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class Main {
 
-    /* Количество повторений */
-    private static final int n = 1000000;
     /* Вероятность брака */
     private static final double P = 0.1;
     /* Первый лимит брака */
@@ -16,11 +15,15 @@ public class Main {
     private static int checkEvery = 3;
 
     public static void main(String[] args) {
-        double time = start();
-        System.out.printf("Среднее время наработки станка до остановки - %.0f Минут, %.0f Секунд", Math.floor(time), time % 1 * 100);
+        Scanner in = new Scanner(System.in);
+        System.out.println("Введите количество повторений для получения оценки:");
+        int n = in.nextInt();
+        double time = start(n);
+        System.out.printf("Среднее время наработки станка до остановки - %.0f Минут, %.0f Секунд \n", Math.floor(time), time % 1 * 100);
+        System.out.println("В среднем станок останавливается после обработки " + time * intensive + " деталей");
     }
 
-    private static double start() {
+    private static double start(int n) {
         Random r = new Random();
         /* Общее время работы станка */
         double time = 0.0;
@@ -49,7 +52,7 @@ public class Main {
                     /* Если количество брака достигло обоих лимитов, то приостанавливаем работу станка */
                     if (defectCounter == firstDefectLimit + secondDefectLimit) {
                         /* Считаем затраченное время (количество обработанных деталей / интенсивность их поступления) */
-                        time += partsCounter / 2.0;
+                        time += partsCounter / intensive;
                         break;
                     }
                 }
